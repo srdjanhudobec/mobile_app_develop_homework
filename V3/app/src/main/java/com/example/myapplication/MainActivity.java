@@ -15,14 +15,15 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    ArrayList<KontaktModel> kontakti = generisiKontakte(50);
+    ArrayList<KontaktModel> obrisaniKontakti = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         LinearLayout container = findViewById(R.id.container);
-
-        ArrayList<KontaktModel> kontakti = generisiKontakte(50);
 
         Intent childIntent = getIntent();
 
@@ -78,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
     private void iscrtajKontakte(ArrayList<KontaktModel> kontakti,LinearLayout container) {//iscrtava kontakte u scrollviewu
         LayoutInflater inflater = getLayoutInflater();
 
+        int redniBroj = 0; //sluzi da bi svaki drugi red bio druge boje
+
         for (int i = 0; i < kontakti.size(); i++) {
             View v = inflater.inflate(R.layout.jedan_red, null);
 
@@ -88,9 +91,16 @@ public class MainActivity extends AppCompatActivity {
             Button obrisi = v.findViewById(R.id.btnObrisi);
             Button dodaj = findViewById(R.id.btnDodaj);
 
-            v.setBackgroundColor(i % 2 == 0 ? Color.BLUE : Color.GRAY);
-
             KontaktModel kontakt = kontakti.get(i);
+
+            if (obrisaniKontakti.contains(kontakt)) {
+                continue;
+            }else{
+                redniBroj++;
+            }
+
+            v.setBackgroundColor(redniBroj % 2 == 0 ? Color.BLUE : Color.GRAY);//preko rednog broja radi jer kad obrisemo i da on opet svaki drugi boji razlicitom bojom
+
             ime.setText(kontakt.ime);
             prezime.setText(kontakt.prezime);
             telefon.setText(kontakt.telefon);
@@ -105,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             obrisi.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    obrisaniKontakti.add(kontakti.get(index)); // Dodaj u listu obrisanih
                     kontakti.remove(index); // brisemo iz liste kontakata
                     container.removeAllViews(); // brisemo sve viewe
                     iscrtajKontakte(kontakti, container); // iscrtavamo novo stanje kontakata
