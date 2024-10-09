@@ -1,0 +1,4 @@
+ako ga filtriranog obrisem on ga nece obrisati u potpunosti! (jer je obrisao iz filtriranih a ne iz originalnih kontakata)
+ako ga filtriranog izmenim on ce prvog izmeniti jer kad je filtiran njemu je index bio 0, ne valja! (problem sa razlicitim indexom u filtiranim i u originalnim)
+
+istraziti sta je match_parent a sta je wrap_content.
