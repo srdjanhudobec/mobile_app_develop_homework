@@ -12,11 +12,14 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<KontaktModel> kontakti = generisiKontakte(50);
     ArrayList<KontaktModel> obrisaniKontakti = new ArrayList<>();
+
+    HashMap<Integer, Integer> originalniIndeksi = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,11 +136,12 @@ public class MainActivity extends AppCompatActivity {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) { //radimo izmenu, prosledimo indeks zajedno sa starim podacima o kontaktu
+                    int originalIndex = originalniIndeksi.containsKey(index) ? originalniIndeksi.get(index) : index;//ako je dobijen filtriranjem uzmi originalni, ako nije uzmi index koji je trenutni u for petlji
                     intent.putExtra("ime",kontakt.ime);
                     intent.putExtra("prezime",kontakt.prezime);
                     intent.putExtra("telefon",kontakt.telefon);
                     intent.putExtra("skype",kontakt.skype);
-                    intent.putExtra("index",index);
+                    intent.putExtra("index",originalIndex);
                     intent.putExtra("isIzmenaOrDodaj","izmena");
                     startActivity(intent);
                 }
@@ -148,13 +152,16 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<KontaktModel> filtrirajKontakte(String query, ArrayList<KontaktModel> originalKontakti) {
         ArrayList<KontaktModel> filtriraniKontakti = new ArrayList<>();//po odredjenom query-u vracamo samo korisnike koji se poklapaju bar po 1 polju
         query = query.toLowerCase().trim();
+        originalniIndeksi.clear();
 
-        for (KontaktModel kontakt : originalKontakti) {
+        for (int i = 0; i < originalKontakti.size(); i++) {
+            KontaktModel kontakt = originalKontakti.get(i);
             if (kontakt.ime.toLowerCase().contains(query) ||
                     kontakt.prezime.toLowerCase().contains(query) ||
                     kontakt.telefon.toLowerCase().contains(query) ||
                     kontakt.skype.toLowerCase().contains(query)) {
                 filtriraniKontakti.add(kontakt);
+                originalniIndeksi.put(filtriraniKontakti.size() - 1, i); // Sačuvamo originalni indeks
             }
         }
 
